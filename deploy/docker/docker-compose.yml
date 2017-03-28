@@ -1,7 +1,7 @@
 version: "3"
 services:
   db:
-    image:  ${REPO_PREFIX}/db:${BUILD_BUILDNUMBER}
+    image:  ${REGISTRY_PREFIX}/database:${BUILD_BUILDNUMBER}
     ports:
       - 27017:27017
       - 28017:28017
@@ -10,7 +10,7 @@ services:
     networks:
       - pu
   order:
-    image:  ${REPO_PREFIX}/order:${BUILD_BUILDNUMBER}
+    image:  ${REGISTRY_PREFIX}/order:${BUILD_BUILDNUMBER}
     ports:
       - 8080:8080
     depends_on: 
@@ -18,7 +18,7 @@ services:
     networks:
       - pu
   web:
-    image:  ${REPO_PREFIX}/web:${BUILD_BUILDNUMBER}
+    image:  ${REGISTRY_PREFIX}/clients:${BUILD_BUILDNUMBER}
     ports:
       - 80:8080
     depends_on: 

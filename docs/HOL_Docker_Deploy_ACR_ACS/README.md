@@ -115,21 +115,18 @@ PartsUnlimitedMRPDocker
     |   └── drop
     |        └── MongoRecords.js
     ├── Order
-        ├── Dockerfile
-        └── drop
-             ├── ordering-service-0.1.0.jar
-             └── run.sh
+    |   ├── Dockerfile
+    |   └── drop
+    |        ├── ordering-service-0.1.0.jar
+    |        └── run.sh
+    └── docker-compose.yml
+    └── compose-token-replace.sh
 ```
 
 1. Create **PartsUnlimitedMRPDocker** directory and **src** subdirectory.
 2. Copy **Clients**, **Database** and **Order** created in [Dockerizing Parts Unlimited MRP](https://microsoft.github.io/PartsUnlimitedMRP/adv/adv-21-Docker.html) lab into the **src** directory.
+3. Copy `docker-compose.yml` and `compose-token-replace.sh`   into the src folder:
 
-**Step 6a.** Create a file called `dockercompose.yml` inside the src folder containing the following:
-
-```
-compose content here
-
-```
 
 **Step 7.** Go to your VSTS account’s homepage (e.g., https://`<account>`.visualstudio.com). Create a new PartsUnlimitedMRPDocker team project by clicking on the **New** button under Recent projects & teams. Type in the project name as **PartsUnlimitedMRPDocker** and select **Git** as the version control, then click on **Create project**:
 
@@ -202,22 +199,22 @@ Configure the task (e.g., Build Clients Image) as follows:
 * **Action**: Select **Build an image**.
 * **Docker File**: Select the path to Docker file for your **Clients** Component.
 * **Use Default Build Context**: Tick this checkbox. Set the build context to the directory that contains the Docker file.  
-* **Image Name**: Enter the image name tagged with build number, **web:$(Build.BuildId)**.
+* **Image Name**: Enter the image name tagged with build number, **clients:$(Build.BuildId)**.
 * **Qualify Image Name**: Tick this checkbox. Qualify the image name with the Docker registry connection's hostname.
 
-**Step 12.** In the same Docker build task, add a build step to run the **web** Docker image. Configure the Docker task (e.g., Run Clients Image) as follows:
+**Step 12.** In the same Docker build task, add a build step to run the **clients** Docker image. Configure the Docker task (e.g., Run Clients Image) as follows:
 
 ![](<media/runclientimage.png>)
 
 * **Docker Registry Connection**: Select the Docker registry endpoint created earlier.
 * **Action**: Select **Run an image**.
-* **Image Name**: Enter the image name (e.g., **web:$(Build.BuildId)**) you wish to run.
+* **Image Name**: Enter the image name (e.g., **clients:$(Build.BuildId)**) you wish to run.
 * **Qualify Image Name**: Tick this checkbox. Qualify the image name with the Docker registry connection's hostname.
 * **Container Name**: Enter your preferred container name (e.g., clients).
 * **Ports**: Enter **80:8080**. Ports in the Docker container to publish to the host.
 
 
-**Step 22.** Repeat the above steps for **order** (ports: 8080:8080) and **db** (ports: 27017:27017) components. 
+**Step 22.** Repeat the above steps for **order** (ports: 8080:8080) and **database** (ports: 27017:27017) components. 
 
 **Step 13.** Add a build step to inspect the running Containers using [Docker Inspect](https://docs.docker.com/engine/reference/commandline/inspect/). Configure the Docker task (e.g., Inspect Clients Container) as follows:
 
@@ -241,7 +238,7 @@ Configure the task (e.g., Build Clients Image) as follows:
     run --name dockerbenchsecurity --net host --pid host --cap-add audit_control -v /var/lib:/var/lib -v /var/run/docker.sock:/var/run/docker.sock -v /usr/lib/systemd:/usr/lib/systemd -v /etc:/etc --label docker_bench_security docker/docker-bench-security
     ```
 
-**Step 15.** Add a build step to push the **webClients** image to your private Docker registry. Configure the Docker task (e.g., Push Clients Image to Private Docker Registry) as follows:
+**Step 15.** Add a build step to push the **Clients** image to your private Docker registry. Configure the Docker task (e.g., Push Clients Image to Private Docker Registry) as follows:
 
 ![](<media/pushclientsimage.png>)
 
@@ -249,10 +246,10 @@ Configure the task (e.g., Build Clients Image) as follows:
 
 * **Docker Registry Connection**: Select the Docker registry endpoint created earlier.
 * **Action**: Select **Push an image**.
-* **Image Name**: Enter the image name (e.g., **web:$(Build.BuildId)**) you wish to push.
+* **Image Name**: Enter the image name (e.g., **clients:$(Build.BuildId)**) you wish to push.
 * **Qualify Image Name**: Tick this checkbox. Qualify the image name with the Docker registry connection's hostname.
 
-**Step 16.** Repeat the above step for **order**  and **db** components. 
+**Step 16.** Repeat the above step for **order**  and **databases** components. 
 
 
 **Step 17.** Add a build step ***Publish Build Artifacts** that that publishes the compose file as a build artifact so it can be used in the release. See the following screen for details.
@@ -280,9 +277,10 @@ Select **Hosted Linux Preview** as **Queue**, **master** as **Branch**, and then
 
 
 ###Task 4: Configure deployment to Docker Swarm running on Azure Container Service 
+VSTS task to deploy to Docker Swarm. We will use scripts and variables to carry out the deployment.
 
 ***Step 1.*** 
-Create SSH endpoint. Click the Settings cog | Services | New Service Endpoint | SSH. Enter the following details:
+Create SSH endpoint. Click the Settings Cog | Services | New Service Endpoint | SSH. Enter the following details:
 
 
 - **Connection Name**: Swarm Cluster
@@ -302,21 +300,43 @@ Create SSH endpoint. Click the Settings cog | Services | New Service Endpoint | 
 
 And click `Create`.
 
+***Step 3.*** Create variables for the release process. Click Variables on the release menu.
 
-***Step 3.*** Configure a task to securely copy the compose file to a deploy folder on the Docker Swarm master node, using the SSH connection you configured previously. See the following screen for details.
+- **docker.registry**: The URL of the Azure Container Registry created earlier.
+- **docker.username**: The Azure Container Registry  username retrieved earlier.
+- **docker.password**: The Azure Container Registry  passwordretrieved earlier earlier.
 
+![](<media/release-variables.png>)
 
+***Step 3.***  Configure a task to update ```docker-compose.yml`` with your registry name and the current build number. Click Environments | Add tasks | Utility | Shell Script | Add | Close. Configure as follows:
 
-***Step 4.*** Configure a second task to execute a bash command to run docker and docker-compose commands on the master node. See the following screen for details.
+- **Script Path**: Browse to compose-token-replace.sh
+- **Arguments**: $(docker.registry) $(Build.BuildNumber)
 
-docker login -u $(docker.username) -p $(docker.password) $(docker.registry) && export DOCKER_HOST=:2375 && cd deploy && docker-compose pull && docker-compose stop && docker-compose rm -f && docker-compose up -d
+![](<media/compose-token-replace.png>)
 
-***Step 5. *** Create Variabels
+***Step 4.*** Configure a task to securely copy the compose file to a deploy folder on the Docker Swarm master node, using the SSH connection you configured previously. Add tasks | Deploy | Copy files over SSH | Add | Close. Configure as follows:
+
+- **SSH Endpoint**: SwarmCluster
+- **Source Folder**: Browse to your compose artifacts directory
+- **Contents**: docker-compose.yml
+- **Target folder**: deploy
+
+![](<media/sshcopy.png>)
+
+***Step 5.*** Configure a second task to execute a bash command to run docker and docker-compose commands on the master node.  Add tasks | Deploy | SSH | Add | Close. Configure as follows:
+
+- **SSH Endpoint**: SwarmCluster
+- **Run**: Commands
+- **Commands**: docker login -u $(docker.username) -p $(docker.password) $(docker.registry) && export DOCKER_HOST=:2375 && cd deploy && docker-compose pull && docker-compose stop && docker-compose rm -f && docker-compose up -d
+- **Advanced: Fail on STDERR**: Uncheck
+
+![](<media/releasecommands.png>)
 
 
 ***Step 6.*** Check functionality
 
-Trigger a new build by commitning a chage...
+Trigger a new build by commiting a change...
 
 ## Congratulations!
 You've completed this HOL! In this lab, you have learned how to set up a private Docker registry, and integrate with Visual Studio Team Services.

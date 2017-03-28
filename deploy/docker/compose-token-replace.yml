@@ -1,0 +1,2 @@
+sed -i -- 's/${REGISTRY_PREFIX}/'"$1"'/g' docker-compose.yml
+sed -i -- 's/${BUILD_BUILDNUMBER}/'"$2"'/g' docker-compose.yml
