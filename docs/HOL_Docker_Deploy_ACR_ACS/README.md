@@ -336,7 +336,7 @@ And click `Create`.
 
 ***Step 6.*** Check functionality
 
-Trigger a new build by commiting a change...
+Trigger a new build by commiting a change to the PartsUnlimitedMRPDocker repository. Brown your applciation at http://agentFQDN/mrp , where agentFQDN is the vlaue recorded after the deployment fo your ACS Swarm cluster.
 
 ## Congratulations!
-You've completed this HOL! In this lab, you have learned how to set up a private Docker registry, and integrate with Visual Studio Team Services.
+You've completed this HOL! In this lab, you have learned how to set up a Azure Container Service, Azure Contianer Registry, and integrate with Visual Studio Team Services.
