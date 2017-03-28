@@ -68,8 +68,10 @@ az group create -n SwarmCluster -l westeurope
 **Step 2.** Deploy cluster running Docker Swarm
 
 > [!TIP]
-> When you create a cluster, specify a globally unique top-level domain name, containing only letters and numbers. The registry name in the examples is `my-cluster`, but substitute a unique, lower case, name of your own. 
+> When you create a cluster, specify a globally unique top-level domain name, containing only letters and numbers. The domain name in the examples is `my-cluster`, but substitute a unique, lower case, name of your own. 
 > 
+>
+The following command uses the option ```--generate-ssh-keys```, this will use an existing SSH key within your profile, or if a key doesnt exist create a new one. This private key will be used later in the deployment process. If you do not want to use an existing private key please create and specify a new key using ```--ssh-key-value```.
 > 
 
 ```azurecli
@@ -78,11 +80,11 @@ az acs create -n acs-cluster -g SwarmCluster -d my-cluster --orchestrator-type "
 
 ``` 
 
-Please take note of:
+Continue with the next task while ACS deploys. When complete please take note of:
 
 * agentFQDN
 * masterFQDN
-* sshKeyValue
+
 
 ###Task 3: Set up a Secured Continuous Integration (CI) with Visual Studio Team Services (VSTS)  
 
@@ -279,7 +281,19 @@ Select **Hosted Linux Preview** as **Queue**, **master** as **Branch**, and then
 
 ###Task 4: Configure deployment to Docker Swarm running on Azure Container Service 
 
-***Step 1.*** Click on `Releases` on the menu and then `+ New Definition`. Select `Empty`, click `Next`, and then chose the following options:
+***Step 1.*** 
+Create SSH endpoint. Click the Settings cog | Services | New Service Endpoint | SSH. Enter the following details:
+
+
+- **Connection Name**: Swarm Cluster
+- **Host Name**: Master FQDN recorded earlier
+- **Port**: 2222
+- **User**: azureuser
+- **Password**: leave blank
+- **SSH Private Key**: copy contents of ```~/.ssh/id_rsa```
+
+
+***Step 2.*** Click on `Releases` on the menu and then `+ New Definition`. Select `Empty`, click `Next`, and then chose the following options:
 
 - **Project**: PartsUnlimitedMRP
 - **Source (Build Definition)**: ???
@@ -288,16 +302,21 @@ Select **Hosted Linux Preview** as **Queue**, **master** as **Branch**, and then
 
 And click `Create`.
 
-***Step 2.*** Click on variables, and add the following two variables:
 
-- **SSHKey**: The SSH key you noted after the deployment of your Swarm cluster. Select the padlock icon to concela the secret. 
+***Step 3.*** Configure a task to securely copy the compose file to a deploy folder on the Docker Swarm master node, using the SSH connection you configured previously. See the following screen for details.
 
 
-***Step 3.*** create tunnel
 
-***Step 4.*** execute compose file
+***Step 4.*** Configure a second task to execute a bash command to run docker and docker-compose commands on the master node. See the following screen for details.
+
+docker login -u $(docker.username) -p $(docker.password) $(docker.registry) && export DOCKER_HOST=:2375 && cd deploy && docker-compose pull && docker-compose stop && docker-compose rm -f && docker-compose up -d
+
+***Step 5. *** Create Variabels
+
 
 ***Step 6.*** Check functionality
+
+Trigger a new build by commitning a chage...
 
 ## Congratulations!
 You've completed this HOL! In this lab, you have learned how to set up a private Docker registry, and integrate with Visual Studio Team Services.
