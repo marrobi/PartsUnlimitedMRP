@@ -155,9 +155,7 @@ services:
     ports:
       - 8080:8080
     environment:
-      - MONGO_PORT=tcp://mongo:27017
-    links: 
-      - db:mongo
+      - MONGO_PORT=tcp://db:27017
     depends_on: 
       - db
     networks:

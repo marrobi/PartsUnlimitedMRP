@@ -191,7 +191,7 @@ We will also create a "drop" folder, this is where we are supposing to put the a
 ** Note, the run.sh is a custom script. It will check if we already have a mongo instance responsing on the port 27017 before to launch the java application. 
 Here is the full script inside the run.sh file : **
 ~~~
-while ! curl http://mongo:27017/
+while ! curl http://db:27017/
 do
   echo "$(date) - still trying"
   sleep 1
