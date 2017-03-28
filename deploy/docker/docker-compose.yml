@@ -1,18 +1,18 @@
-version: "3"
+version: "2"
 services:
   db:
     image:  ${REGISTRY_PREFIX}/database:${BUILD_BUILDNUMBER}
     ports:
       - 27017:27017
       - 28017:28017
-    links: 
-      - db:mongo 
     networks:
       - pu
   order:
     image:  ${REGISTRY_PREFIX}/order:${BUILD_BUILDNUMBER}
     ports:
       - 8080:8080
+    links: 
+      - db:mongo
     depends_on: 
       - db
     networks:
@@ -21,8 +21,11 @@ services:
     image:  ${REGISTRY_PREFIX}/clients:${BUILD_BUILDNUMBER}
     ports:
       - 80:8080
+    links: 
+      - db:mongo
     depends_on: 
       - db
+      - order
     networks:
       - pu
 networks:

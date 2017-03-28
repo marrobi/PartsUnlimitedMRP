@@ -44,9 +44,23 @@ az acr create -n my-registry -g ContainerRegistry -l westeurope --admin-enabled 
 
 The output is similar to the following:
 
-![az acr create output](./media/container-registry-get-started-azure-cli/acr_create.png)
+```
 
-
+{
+  "adminUserEnabled": false,
+  "creationDate": "2017-03-28T14:14:21.418885+00:00",
+  "id": "/subscriptions/9999999-6032-4b50-884c-55cb9f074928/resourcegroups/ContainerRegistry/providers/Microsoft.ContainerRegistry/registries/myregistry",
+  "location": "westeurope",
+  "loginServer": "myregistry.azurecr.io",
+  "name": "myregistry",
+  "storageAccount": {
+    "accessKey": null,
+    "name": "myregistry1141344"
+  },
+  "tags": {},
+  "type": "Microsoft.ContainerRegistry/registries"
+}
+```
 Take special note:
  
 * `loginServer` - The fully qualified name you specify to [log in to the registry](container-registry-authentication.md). In this example, the name is `myregistry-contoso.exp.azurecr.io` (all lowercase).
@@ -71,7 +85,7 @@ az group create -n SwarmCluster -l westeurope
 > When you create a cluster, specify a globally unique top-level domain name, containing only letters and numbers. The domain name in the examples is `my-cluster`, but substitute a unique, lower case, name of your own. 
 > 
 >
-The following command uses the option ```--generate-ssh-keys```, this will use an existing SSH key within your profile, or if a key doesnt exist create a new one. This private key will be used later in the deployment process. If you do not want to use an existing private key please create and specify a new key using ```--ssh-key-value```.
+The following command uses the option ```--generate-ssh-keys```, this will use an existing SSH key within your profile, or if a key doesnt exist create a new one. This private key will be used later in the deployment process. If you do not want to use an existing private key please create and specify a new key pair and supply path to the public key using ```--ssh-key-value```.
 > 
 
 ```azurecli
@@ -80,7 +94,7 @@ az acs create -n acs-cluster -g SwarmCluster -d my-cluster --orchestrator-type "
 
 ``` 
 
-Continue with the next task while ACS deploys. When complete please take note of:
+Continue with the next task while ACS deploys. When complete please take note of the following values from the output JSON:
 
 * agentFQDN
 * masterFQDN
@@ -124,8 +138,51 @@ PartsUnlimitedMRPDocker
 
 1. Create **PartsUnlimitedMRPDocker** directory and **src** subdirectory.
 2. Copy **Clients**, **Database** and **Order** created in [Dockerizing Parts Unlimited MRP](https://microsoft.github.io/PartsUnlimitedMRP/adv/adv-21-Docker.html) lab into the **src** directory.
-3. Copy `docker-compose.yml` and `compose-token-replace.sh`   into the src folder:
+3. Create a file named `docker-compose.yml` in the src folder with the following content:
 
+```
+version: "2"
+services:
+  db:
+    image:  ${REGISTRY_PREFIX}/database:${BUILD_BUILDNUMBER}
+    ports:
+      - 27017:27017
+      - 28017:28017
+    networks:
+      - pu
+  order:
+    image:  ${REGISTRY_PREFIX}/order:${BUILD_BUILDNUMBER}
+    ports:
+      - 8080:8080
+    links: 
+      - db:mongo
+    depends_on: 
+      - db
+    networks:
+      - pu
+  web:
+    image:  ${REGISTRY_PREFIX}/clients:${BUILD_BUILDNUMBER}
+    ports:
+      - 80:8080
+    links: 
+      - db:mongo
+    depends_on: 
+      - db
+      - order
+    networks:
+      - pu
+networks:
+  pu: 
+  
+
+```
+
+4. Create a file named `compose-token-replace.sh` with the following content  and place into the src folder:
+
+```
+sed -i -- 's/${REGISTRY_PREFIX}/'"$1"'/g' docker-compose.yml
+sed -i -- 's/${BUILD_BUILDNUMBER}/'"$2"'/g' docker-compose.yml
+```
 
 **Step 3.** Go to your VSTS account’s homepage (e.g., https://`<account>`.visualstudio.com). Create a new PartsUnlimitedMRPDocker team project by clicking on the **New** button under Recent projects & teams. Type in the project name as **PartsUnlimitedMRPDocker** and select **Git** as the version control, then click on **Create project**:
 
