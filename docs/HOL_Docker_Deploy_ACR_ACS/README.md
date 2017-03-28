@@ -386,9 +386,6 @@ And click `Create`.
 - **Commands**: docker login -u $(docker.username) -p $(docker.password) $(docker.registry) && export DOCKER_HOST=:2375 && cd deploy && docker-compose pull && docker-compose stop && docker-compose rm -f && docker-compose up -d && docker exec deploy_db_1 mongo ordering /tmp/MongoRecords.js
 - **Advanced: Fail on STDERR**: Uncheck
 
-![](<media/releasecommands.png>)
-
-
 ***Step 6.*** Check functionality
 
 Trigger a new build by commiting a change to the PartsUnlimitedMRPDocker repository. Brown your applciation at http://agentFQDN/mrp , where agentFQDN is the vlaue recorded after the deployment fo your ACS Swarm cluster.
