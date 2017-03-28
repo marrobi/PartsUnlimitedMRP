@@ -388,7 +388,7 @@ And click `Create`.
 
 ***Step 6.*** Check functionality
 
-Trigger a new build by commiting a change to the PartsUnlimitedMRPDocker repository. Brown your applciation at http://agentFQDN/mrp , where agentFQDN is the vlaue recorded after the deployment fo your ACS Swarm cluster.
+Trigger a new build by commiting a change to the PartsUnlimitedMRPDocker repository. Browse your applciation at http://agentFQDN/mrp , where agentFQDN is the vlaue recorded after the deployment fo your ACS Swarm cluster.
 
 ## Congratulations!
 
