@@ -1,6 +1,6 @@
-#Deploy using Docker, Azure Container Registry and Azure Container Service
+# Deploy using Docker, Azure Container Registry and Azure Container Service
 
-This document describes how to set up you own Docker registry on Microsoft Azure. We will also set up a Continuous Integration build (CI) that will allow us to build and run Docker images, inspect and scan containers, push Docker images to your own private Docker registry and clean up build environment whenever the branch is updated.  
+This document describes how to set up an Azure Container Registry and an Azure Container Service Docker Swarm cluster on Microsoft Azure. We will also set up a Continuous Integration build (CI) that will allow us to build and run Docker images, inspect and scan containers, push Docker images to ACR and clean up build environment whenever the branch is updated.  
 
 **Prerequisites**
 - Complete the [Dockerizing Parts Unlimited MRP](https://microsoft.github.io/PartsUnlimitedMRP/adv/adv-21-Docker.html) lab
@@ -15,7 +15,7 @@ This document describes how to set up you own Docker registry on Microsoft Azure
 
 **2. Set up a Secured Continuous Integration (CI) with Visual Studio Team Services (VSTS)** Integrate Docker images and containers into your DevOps workflows using [Docker Integration](https://marketplace.visualstudio.com/items?itemName=ms-vscs-rm.docker) for Team Services. This Docker extension adds a task that enables you to build Docker images, push Docker images to Azure Container Registry, run Docker images or execute other operations offered by the Docker CLI.   
 
-###Task 1: Create an Azure Container registry
+### Task 1: Create an Azure Container registry
 **Step 1.** Create a resource group called `ContainerRegistry`.
 
 ```azurecli
@@ -65,7 +65,7 @@ Record the `username` and `password` for later use.
 az group create -n SwarmCluster -l westeurope 
 ```
 
-**Step 2.** Deploy cluster running Docker Swarm
+**Step 4.** Deploy cluster running Docker Swarm
 
 > [!TIP]
 > When you create a cluster, specify a globally unique top-level domain name, containing only letters and numbers. The domain name in the examples is `my-cluster`, but substitute a unique, lower case, name of your own. 
@@ -86,7 +86,7 @@ Continue with the next task while ACS deploys. When complete please take note of
 * masterFQDN
 
 
-###Task 3: Set up a Secured Continuous Integration (CI) with Visual Studio Team Services (VSTS)  
+### Task 3: Set up a Secured Continuous Integration (CI) with Visual Studio Team Services (VSTS)  
 
 The goal of this task is to build a Continuous Integration (CI) pipeline with Docker. The flow that we will setup is explained as follows:
 
@@ -95,13 +95,12 @@ The goal of this task is to build a Continuous Integration (CI) pipeline with Do
 3. Inspect: Examine the software we build to ensure that they reach a high standard. The following tools are used:
    * [Docker Inspect](https://docs.docker.com/engine/reference/commandline/inspect/): Using the basic inspect command, a wealth of information (e.g., ports) about images and containers can be gathered.
    * [Docker Bench](https://github.com/docker/docker-bench-security): It is a script that checks for dozens of common best-practices around deploying Docker containers in production.
-4. Push: After inspection, push your image to the private Docker Registry created in previous task.
+4. Push: After inspection, push your image to ACR as created in previous task.
 5. Remove: Clean up the build environment by removing images and containers.
 
 **Step 1.** Install [Docker Integration](https://marketplace.visualstudio.com/items?itemName=ms-vscs-rm.docker) for Visual Studio Team Services. This Docker extension adds a task that enables you to build Docker images, push Docker images to an authenticated Docker registry, run Docker images or execute other operations offered by the Docker CLI.
 
-
-**Step 6.** After complete the [Dockerizing Parts Unlimited MRP](https://microsoft.github.io/PartsUnlimitedMRP/adv/adv-21-Docker.html) lab, please structure your directories and files as follows:    
+**Step 2.** After complete the [Dockerizing Parts Unlimited MRP](https://microsoft.github.io/PartsUnlimitedMRP/adv/adv-21-Docker.html) lab, please structure your directories and files as follows:    
 
 ```
 PartsUnlimitedMRPDocker
@@ -128,7 +127,7 @@ PartsUnlimitedMRPDocker
 3. Copy `docker-compose.yml` and `compose-token-replace.sh`   into the src folder:
 
 
-**Step 7.** Go to your VSTS account’s homepage (e.g., https://`<account>`.visualstudio.com). Create a new PartsUnlimitedMRPDocker team project by clicking on the **New** button under Recent projects & teams. Type in the project name as **PartsUnlimitedMRPDocker** and select **Git** as the version control, then click on **Create project**:
+**Step 3.** Go to your VSTS account’s homepage (e.g., https://`<account>`.visualstudio.com). Create a new PartsUnlimitedMRPDocker team project by clicking on the **New** button under Recent projects & teams. Type in the project name as **PartsUnlimitedMRPDocker** and select **Git** as the version control, then click on **Create project**:
 
 ![](<media/createteamproject.png>)
 
@@ -155,11 +154,11 @@ Folders and files are now added into in your VSTS Git repository:
 
 ![](<media/projectstructure.png>)
 
-**Step 8.** Go to your VSTS account’s homepage (e.g., https://<account>.visualstudio.com). Navigate to the **PartsUnlimitedMRPDocker** team project in VSTS.
+**Step 4.** Go to your VSTS account’s homepage (e.g., https://<account>.visualstudio.com). Navigate to the **PartsUnlimitedMRPDocker** team project in VSTS.
 
 ![](<media/browsetoteamproject.png>)
 
-**Step 9.** Create a Docker registry endpoint. In the **Settings** menu, select **Services**.
+**Step 5.** Create a Docker registry endpoint. In the **Settings** menu, select **Services**.
 
 ![](<media/servicespage.png>)
 
@@ -167,11 +166,11 @@ In the **New Service Endpoint** list, select **Docker Registry**.
 
 ![](<media/adddockerregistry.png>)
 
-Enter the URL of your private Docker registry and login credentials created in previous task.
+Enter the URL of your Azure Container Registry and login credentials created in previous task.
 
 ![](<media/enterdockerregistrydetails.png>)
 
-**Step 10.** Create a new build definition. In the **Build & Release** menu, select **Builds**.
+**Step 6.** Create a new build definition. In the **Build & Release** menu, select **Builds**.
 
 ![](<media/addbuilddef.png>)
 
@@ -183,7 +182,7 @@ Enter the URL of your private Docker registry and login credentials created in p
 
 ![](<media/builddefconfig.png>)
 
- **Step 11.** Add a build step to build the **Clients** Docker image. Click on the **Build** tab, click **Add build step...**, and then click the **Add** button next to the Docker task. Docker task enables you to build, run, push Docker images or execute other operations offered by the Docker CLI.
+ **Step 7.** Add a build step to build the **Clients** Docker image. Click on the **Build** tab, click **Add build step...**, and then click the **Add** button next to the Docker task. Docker task enables you to build, run, push Docker images or execute other operations offered by the Docker CLI.
 
 ![](<media/addstepforweb.png>)
 
@@ -202,7 +201,7 @@ Configure the task (e.g., Build Clients Image) as follows:
 * **Image Name**: Enter the image name tagged with build number, **clients:$(Build.BuildId)**.
 * **Qualify Image Name**: Tick this checkbox. Qualify the image name with the Docker registry connection's hostname.
 
-**Step 12.** In the same Docker build task, add a build step to run the **clients** Docker image. Configure the Docker task (e.g., Run Clients Image) as follows:
+**Step 8.** In the same Docker build task, add a build step to run the **clients** Docker image. Configure the Docker task (e.g., Run Clients Image) as follows:
 
 ![](<media/runclientimage.png>)
 
@@ -214,9 +213,9 @@ Configure the task (e.g., Build Clients Image) as follows:
 * **Ports**: Enter **80:8080**. Ports in the Docker container to publish to the host.
 
 
-**Step 22.** Repeat the above steps for **order** (ports: 8080:8080) and **database** (ports: 27017:27017) components. 
+**Step 9.** Repeat the above steps for **order** (ports: 8080:8080) and **database** (ports: 27017:27017) components. 
 
-**Step 13.** Add a build step to inspect the running Containers using [Docker Inspect](https://docs.docker.com/engine/reference/commandline/inspect/). Configure the Docker task (e.g., Inspect Clients Container) as follows:
+**Step 10.** Add a build step to inspect the running Containers using [Docker Inspect](https://docs.docker.com/engine/reference/commandline/inspect/). Configure the Docker task (e.g., Inspect Clients Container) as follows:
 
 ![](<media/inspectclientscontainer.png>)
 
@@ -227,7 +226,7 @@ Configure the task (e.g., Build Clients Image) as follows:
     inspect <container-name>
     ```
 
-**Step 14.** Add a build step to scan security vulnerabilities using [Docker Bench for Security](https://github.com/docker/docker-bench-security). Configure the Docker task (e.g., Scan Security Vulnerabilities for Images and Containers) as follows:
+**Step 11.** Add a build step to scan security vulnerabilities using [Docker Bench for Security](https://github.com/docker/docker-bench-security). Configure the Docker task (e.g., Scan Security Vulnerabilities for Images and Containers) as follows:
 
 ![](<media/scansecurity.png>)
 
@@ -238,7 +237,7 @@ Configure the task (e.g., Build Clients Image) as follows:
     run --name dockerbenchsecurity --net host --pid host --cap-add audit_control -v /var/lib:/var/lib -v /var/run/docker.sock:/var/run/docker.sock -v /usr/lib/systemd:/usr/lib/systemd -v /etc:/etc --label docker_bench_security docker/docker-bench-security
     ```
 
-**Step 15.** Add a build step to push the **Clients** image to your private Docker registry. Configure the Docker task (e.g., Push Clients Image to Private Docker Registry) as follows:
+**Step 12.** Add a build step to push the **Clients** image to ACR. Configure the Docker task (e.g., Push Clients Image to ACR) as follows:
 
 ![](<media/pushclientsimage.png>)
 
@@ -249,17 +248,17 @@ Configure the task (e.g., Build Clients Image) as follows:
 * **Image Name**: Enter the image name (e.g., **clients:$(Build.BuildId)**) you wish to push.
 * **Qualify Image Name**: Tick this checkbox. Qualify the image name with the Docker registry connection's hostname.
 
-**Step 16.** Repeat the above step for **order**  and **databases** components. 
+**Step 13.** Repeat the above step for **order**  and **databases** components. 
 
 
-**Step 17.** Add a build step ***Publish Build Artifacts** that that publishes the compose file as a build artifact so it can be used in the release. See the following screen for details.
+**Step 14.** Add a build step ***Publish Build Artifacts** that that publishes the compose file as a build artifact so it can be used in the release. See the following screen for details.
 
 * **Path to publish**: Browse to `/src/dockercompose.yml`
 * **Artifact name**: `compose`
 * **Artifact type**: `Server`
 
 
-**Step 18.** Save the build definition, and then click the **Queue new build** button.
+**Step 15.** Save the build definition, and then click the **Queue new build** button.
 
 ![](<media/saveandbuild.png>)
 
@@ -267,11 +266,11 @@ Select **Hosted Linux Preview** as **Queue**, **master** as **Branch**, and then
 
 ![](<media/queuebuildconfig.png>)
 
-**Step 19.** Once the build is done, click on the build step **Inspect Clients Container** to view the inspection results for **Clients** container.
+**Step 16.** Once the build is done, click on the build step **Inspect Clients Container** to view the inspection results for **Clients** container.
 
 ![](<media/inspectionresult.png>)
 
-**Step 20.** Click on the build step **Scan Security Vulnerabilities for Images and Containers** to view the scan results for images and containers.
+**Step 17.** Click on the build step **Scan Security Vulnerabilities for Images and Containers** to view the scan results for images and containers.
 
 ![](<media/scanresult.png>)
 
@@ -339,4 +338,5 @@ And click `Create`.
 Trigger a new build by commiting a change to the PartsUnlimitedMRPDocker repository. Brown your applciation at http://agentFQDN/mrp , where agentFQDN is the vlaue recorded after the deployment fo your ACS Swarm cluster.
 
 ## Congratulations!
+
 You've completed this HOL! In this lab, you have learned how to set up a Azure Container Service, Azure Contianer Registry, and integrate with Visual Studio Team Services.
