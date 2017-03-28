@@ -144,16 +144,18 @@ PartsUnlimitedMRPDocker
 version: "2"
 services:
   db:
-    image:  ${REGISTRY_PREFIX}/database:${BUILD_BUILDNUMBER}
+    image:  ${REPO_PREFIX}/database:${BUILD_BUILDNUMBER}
     ports:
       - 27017:27017
       - 28017:28017
     networks:
       - pu
   order:
-    image:  ${REGISTRY_PREFIX}/order:${BUILD_BUILDNUMBER}
+    image:  ${REPO_PREFIX}/order:${BUILD_BUILDNUMBER}
     ports:
       - 8080:8080
+    environment:
+      - MONGO_PORT=tcp://mongo:27017
     links: 
       - db:mongo
     depends_on: 
@@ -161,11 +163,9 @@ services:
     networks:
       - pu
   web:
-    image:  ${REGISTRY_PREFIX}/clients:${BUILD_BUILDNUMBER}
+    image:  ${REPO_PREFIX}/clients:${BUILD_BUILDNUMBER}
     ports:
       - 80:8080
-    links: 
-      - db:mongo
     depends_on: 
       - db
       - order
@@ -174,6 +174,7 @@ services:
 networks:
   pu: 
   
+
 
 ```
 
@@ -384,7 +385,7 @@ And click `Create`.
 
 - **SSH Endpoint**: SwarmCluster
 - **Run**: Commands
-- **Commands**: docker login -u $(docker.username) -p $(docker.password) $(docker.registry) && export DOCKER_HOST=:2375 && cd deploy && docker-compose pull && docker-compose stop && docker-compose rm -f && docker-compose up -d
+- **Commands**: docker login -u $(docker.username) -p $(docker.password) $(docker.registry) && export DOCKER_HOST=:2375 && cd deploy && docker-compose pull && docker-compose stop && docker-compose rm -f && docker-compose up -d && docker exec deploy_db_1 mongo ordering /tmp/MongoRecords.js
 - **Advanced: Fail on STDERR**: Uncheck
 
 ![](<media/releasecommands.png>)
