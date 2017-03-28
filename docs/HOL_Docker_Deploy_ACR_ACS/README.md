@@ -202,22 +202,22 @@ Configure the task (e.g., Build Clients Image) as follows:
 * **Action**: Select **Build an image**.
 * **Docker File**: Select the path to Docker file for your **Clients** Component.
 * **Use Default Build Context**: Tick this checkbox. Set the build context to the directory that contains the Docker file.  
-* **Image Name**: Enter your preferred image name. You can tag an image with build number (e.g., **clients:$(Build.BuildId)**).
+* **Image Name**: Enter the image name tagged with build number, **web:$(Build.BuildId)**.
 * **Qualify Image Name**: Tick this checkbox. Qualify the image name with the Docker registry connection's hostname.
 
-**Step 12.** In the same Docker build task, add a build step to run the **Clients** Docker image. Configure the Docker task (e.g., Run Clients Image) as follows:
+**Step 12.** In the same Docker build task, add a build step to run the **web** Docker image. Configure the Docker task (e.g., Run Clients Image) as follows:
 
 ![](<media/runclientimage.png>)
 
 * **Docker Registry Connection**: Select the Docker registry endpoint created earlier.
 * **Action**: Select **Run an image**.
-* **Image Name**: Enter the image name (e.g., **clients:$(Build.BuildId)**) you wish to run.
+* **Image Name**: Enter the image name (e.g., **web:$(Build.BuildId)**) you wish to run.
 * **Qualify Image Name**: Tick this checkbox. Qualify the image name with the Docker registry connection's hostname.
 * **Container Name**: Enter your preferred container name (e.g., clients).
 * **Ports**: Enter **80:8080**. Ports in the Docker container to publish to the host.
 
 
-**Step 22.** Repeat the above steps for **order** (ports: 8080:8080) and **database** (ports: 27017:27017) components. 
+**Step 22.** Repeat the above steps for **order** (ports: 8080:8080) and **db** (ports: 27017:27017) components. 
 
 **Step 13.** Add a build step to inspect the running Containers using [Docker Inspect](https://docs.docker.com/engine/reference/commandline/inspect/). Configure the Docker task (e.g., Inspect Clients Container) as follows:
 
@@ -241,7 +241,7 @@ Configure the task (e.g., Build Clients Image) as follows:
     run --name dockerbenchsecurity --net host --pid host --cap-add audit_control -v /var/lib:/var/lib -v /var/run/docker.sock:/var/run/docker.sock -v /usr/lib/systemd:/usr/lib/systemd -v /etc:/etc --label docker_bench_security docker/docker-bench-security
     ```
 
-**Step 15.** Add a build step to push the **Clients** image to your private Docker registry. Configure the Docker task (e.g., Push Clients Image to Private Docker Registry) as follows:
+**Step 15.** Add a build step to push the **webClients** image to your private Docker registry. Configure the Docker task (e.g., Push Clients Image to Private Docker Registry) as follows:
 
 ![](<media/pushclientsimage.png>)
 
@@ -249,10 +249,10 @@ Configure the task (e.g., Build Clients Image) as follows:
 
 * **Docker Registry Connection**: Select the Docker registry endpoint created earlier.
 * **Action**: Select **Push an image**.
-* **Image Name**: Enter the image name (e.g., **clients:$(Build.BuildId)**) you wish to push.
+* **Image Name**: Enter the image name (e.g., **web:$(Build.BuildId)**) you wish to push.
 * **Qualify Image Name**: Tick this checkbox. Qualify the image name with the Docker registry connection's hostname.
 
-**Step 16.** Repeat the above step for **order**  and **database** components. 
+**Step 16.** Repeat the above step for **order**  and **db** components. 
 
 
 **Step 17.** Add a build step ***Publish Build Artifacts** that that publishes the compose file as a build artifact so it can be used in the release. See the following screen for details.
