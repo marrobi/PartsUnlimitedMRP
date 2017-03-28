@@ -63,7 +63,7 @@ The output is similar to the following:
 ```
 Take special note:
  
-* `loginServer` - The fully qualified name you specify to [log in to the registry](container-registry-authentication.md). In this example, the name is `myregistry-contoso.exp.azurecr.io` (all lowercase).
+* `loginServer` - The fully qualified name you specify to [log in to the registry](container-registry-authentication.md). In this example, the name is `myregistry.azurecr.io` (all lowercase).
 
 **Step 3.** Retrieve login credentials for the registry:
 
@@ -306,7 +306,7 @@ Configure the task (e.g., Build Clients Image) as follows:
 * **Image Name**: Enter the image name (e.g., **clients:$(Build.BuildId)**) you wish to push.
 * **Qualify Image Name**: Tick this checkbox. Qualify the image name with the Docker registry connection's hostname.
 
-**Step 13.** Repeat the above step for **order**  and **databases** components. 
+**Step 13.** Repeat the above step for **order**  and **database** components. 
 
 
 **Step 14.** Add a build step ***Publish Build Artifacts** that that publishes the compose file as a build artifact so it can be used in the release. See the following screen for details.
