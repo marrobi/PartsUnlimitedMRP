@@ -155,6 +155,7 @@ CMD ["mongod", "--smallfiles", "--rest"]
 
 We will also create a "drop" folder inside the Database folder, and put all the files that we want to transfer in this container. 
 For example, a Javascript file named MongoRecords.js with the data that we want to import in the mongo database at each deployment.
+**Unclear: So we create MongoRecords.js at this stage**
 
 ###  Step 2 : Dockerfile for the ordering service using JAVA ###
 
@@ -189,7 +190,8 @@ ENTRYPOINT sh run.sh
 We will also create a "drop" folder, this is where we are supposing to put the artifact (.jar) and the run.sh script.
 
 ** Note, the run.sh is a custom script. It will check if we already have a mongo instance responsing on the port 27017 before to launch the java application. 
-Here is the full script inside the run.sh file : **
+Here is the full script inside the run.sh file : **  
+**Unclear: I assume this needs to do into the drop folder**
 ~~~
 while ! curl http://db:27017/
 do
