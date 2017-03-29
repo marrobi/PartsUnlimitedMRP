@@ -309,7 +309,7 @@ Configure the task (e.g., Build Clients Image) as follows:
 
 **Step 14.** Add a build step ***Publish Build Artifacts** that that publishes the compose file as a build artifact so it can be used in the release. See the following screen for details.
 
-* **Path to publish**: Browse to `/src/dockercompose.yml`
+* **Path to publish**: Browse to `/src/docker-compose.yml`
 * **Artifact name**: `compose`
 * **Artifact type**: `Server`
 
