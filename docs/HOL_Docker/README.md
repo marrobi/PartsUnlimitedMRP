@@ -158,7 +158,7 @@ For example, a Javascript file named MongoRecords.js with the data that we want 
 
 ###  Step 2 : Dockerfile for the ordering service using JAVA ###
 
-We will create an other empty folder, create an empty file named Dockerfile and paste this 7 command lines in it.
+We will create an other empty folder called Order, create an empty file named Dockerfile and paste this 7 command lines in it.
 
 - We will use the official openjdk 8-jre image from the Docker Hub, we will use as first instruction : `FROM openjdk:8-jre`
 - Next, we can specify a maintainer using the command : `MAINTAINER YouEmailAddress` 
@@ -203,7 +203,7 @@ java -jar ordering-*.jar
 
 ###  Step 3 : Dockerfile for the web server using Tomcat ###
 
-We will create a third empty folder, create an empty file named Dockerfile and paste this 5 command lines in it. 
+We will create a third empty folder called Clients, create an empty file named Dockerfile and paste this 5 command lines in it. 
 
 - We will use the official tomcat 7 running on JRE-8 image from the Docker Hub, we will use as first instruction : `FROM tomcat:7-jre8`
 - Next, we can specify a maintainer using the command : `MAINTAINER YouEmailAddress` 
