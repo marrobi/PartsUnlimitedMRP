@@ -144,14 +144,14 @@ PartsUnlimitedMRPDocker
 version: "2"
 services:
   db:
-    image:  ${REPO_PREFIX}/database:${BUILD_BUILDNUMBER}
+    image:  ${REGISTRY_PREFIX}/database:${BUILD_BUILDNUMBER}
     ports:
       - 27017:27017
       - 28017:28017
     networks:
       - pu
   order:
-    image:  ${REPO_PREFIX}/order:${BUILD_BUILDNUMBER}
+    image:  ${REGISTRY_PREFIX}/order:${BUILD_BUILDNUMBER}
     ports:
       - 8080:8080
     environment:
@@ -161,7 +161,7 @@ services:
     networks:
       - pu
   web:
-    image:  ${REPO_PREFIX}/clients:${BUILD_BUILDNUMBER}
+    image:  ${REGISTRY_PREFIX}/clients:${BUILD_BUILDNUMBER}
     ports:
       - 80:8080
     depends_on: 
