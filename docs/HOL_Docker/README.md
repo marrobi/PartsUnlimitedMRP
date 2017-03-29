@@ -155,7 +155,7 @@ CMD ["mongod", "--smallfiles", "--rest"]
 
 We will also create a "drop" folder inside the Database folder, and put all the files that we want to transfer in this container. 
 For example, a Javascript file named MongoRecords.js with the data that we want to import in the mongo database at each deployment.
-**Unclear: So we create MongoRecords.js at this stage**
+**Unclear: Do we create MongoRecords.js at this stage?**
 
 ###  Step 2 : Dockerfile for the ordering service using JAVA ###
 
