@@ -154,7 +154,7 @@ CMD ["mongod", "--smallfiles", "--rest"]
 ~~~
 
 We will also create a "drop" folder inside the Database folder, and put all the files that we want to transfer in this container. 
-For example, a Javascript file named MongoRecords.js with the data that we want to import in the mongo database at each deployment.
+For example, a Javascript file named MongoRecords.js with the data that we want to import in the mongo database at each deployment. There is a sample MongoRecords.js located in this repo here: PartsUnlimitedMRP/blob/patch-1/deploy/MongoRecords.js
 
 ###  Step 2 : Dockerfile for the ordering service using JAVA ###
 
