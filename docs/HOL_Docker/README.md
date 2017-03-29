@@ -232,6 +232,7 @@ We will also create a "drop" folder, this is where we are supposing to put the a
 ### Step 4 : Build, run and ship our containers ###
 
 We have now three different folders who contains one Dockerfile each, you should have a folder structure like this :
+**Unclear: Instructions above didn't name the folders 'Order' or 'Clients' **
 
 ~~~
 .
@@ -253,6 +254,7 @@ We have now three different folders who contains one Dockerfile each, you should
 ~~~
 
 Inside the drop folder, you can manually copy the .WAR and .JAR for now [(from Here)](https://github.com/Microsoft/PartsUnlimitedMRP/tree/master/builds), 
+**Unclear: which drop folder!?**
 We will explain how you can automatically generate and download it in this folder in an other HOL.
 Finally we also add two shell scripts at the root :
 * BuildAndRun.sh
