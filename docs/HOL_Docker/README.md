@@ -258,6 +258,8 @@ Finally we also add two shell scripts at the root :
 
 The first one `BuildAndRun.sh` will simply build your containers using the `docker build` command and run it on the machine where you are running this script with the command `docker run` like explained in the previous section.
 
+** NOTE ** If you are running on Windows, the scripts should be PowerShell scripts i.e. .ps1 instead of .sh
+
 Here is the contain of the script :
 
 ~~~
