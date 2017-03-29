@@ -26,6 +26,8 @@ az group create -n ContainerRegistry -l westeurope
 **Step 2.** Create a container registry
 Run the `az acr create` command to create a container registry. 
 
+*Note: If you get an error about acr, please run `az component update --add acr` which will install the acr component for the CLI*
+
 > [!TIP]
 > When you create a registry, specify a globally unique top-level domain name, containing only letters and numbers. The registry name in the examples is `my-registry`, but substitute a unique, lower case, name of your own. 
 > 
