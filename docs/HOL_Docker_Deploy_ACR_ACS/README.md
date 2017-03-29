@@ -179,7 +179,7 @@ networks:
 4. Create a file named `compose-token-replace.sh` with the following content  and place into the src folder:
 
 ```
-sed -i -- 's/${REGISTRY_PREFIX}/'"$1"'/g' docker-compose.yml
+sed -i -- 's/${REPO_PREFIX}/'"$1"'/g' docker-compose.yml
 sed -i -- 's/${BUILD_BUILDNUMBER}/'"$2"'/g' docker-compose.yml
 ```
 
@@ -309,7 +309,7 @@ Configure the task (e.g., Build Clients Image) as follows:
 
 **Step 14.** Add a build step ***Publish Build Artifacts** that that publishes the compose file as a build artifact so it can be used in the release. See the following screen for details.
 
-* **Path to publish**: `src/docker-compose.yml`
+* **Path to publish**: Browse to `src`
 * **Artifact name**: `compose`
 * **Artifact type**: `Server`
 
