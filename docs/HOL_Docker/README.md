@@ -154,11 +154,11 @@ CMD ["mongod", "--smallfiles", "--rest"]
 ~~~
 
 We will also create a "drop" folder inside the Database folder, and put all the files that we want to transfer in this container. 
-For example, a Javascript file named MongoRecords.js with the data that we want to import in the mongo database at each deployment.
+For example, a Javascript file named MongoRecords.js with the data that we want to import in the mongo database at each deployment. There is a sample MongoRecords.js located in this repo here: PartsUnlimitedMRP/blob/patch-1/deploy/MongoRecords.js
 
 ###  Step 2 : Dockerfile for the ordering service using JAVA ###
 
-We will create an other empty folder, create an empty file named Dockerfile and paste this 7 command lines in it.
+We will create an other empty folder called Order, create an empty file named Dockerfile and paste this 7 command lines in it.
 
 - We will use the official openjdk 8-jre image from the Docker Hub, we will use as first instruction : `FROM openjdk:8-jre`
 - Next, we can specify a maintainer using the command : `MAINTAINER YouEmailAddress` 
@@ -203,7 +203,7 @@ java -jar ordering-*.jar
 
 ###  Step 3 : Dockerfile for the web server using Tomcat ###
 
-We will create a third empty folder, create an empty file named Dockerfile and paste this 5 command lines in it. 
+We will create a third empty folder called Clients, create an empty file named Dockerfile and paste this 5 command lines in it. 
 
 - We will use the official tomcat 7 running on JRE-8 image from the Docker Hub, we will use as first instruction : `FROM tomcat:7-jre8`
 - Next, we can specify a maintainer using the command : `MAINTAINER YouEmailAddress` 
@@ -258,13 +258,15 @@ Finally we also add two shell scripts at the root :
 
 The first one `BuildAndRun.sh` will simply build your containers using the `docker build` command and run it on the machine where you are running this script with the command `docker run` like explained in the previous section.
 
+** NOTE ** If you are running on Windows, the scripts should be PowerShell scripts i.e. .ps1 instead of .sh
+
 Here is the contain of the script :
 
 ~~~
 #!/bin/bash
 
 #Build your docker images manually on the server
-docker build -t mypartsunlimited/db ./Database
+docker build -t mypartsunlimitedmrp/db ./Database
 docker build -t mypartsunlimitedmrp/order ./Order
 docker build -t mypartsunlimitedmrp/web ./Clients
 
